@@ -10,38 +10,76 @@ class SignIn extends StatefulWidget {
 
 class _SignInState extends State<SignIn> {
   final AuthService _auth = AuthService();
+
+  String email = '';
+  String password = '';
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.brown,
-      appBar: AppBar(
-        title: Text('Brew Coffee!'),
-        backgroundColor: Colors.brown[400],
-      ),
-      body: Container(
-        padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 20.0),
-        child: ElevatedButton(
-          style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.all<Color>(
-                  Color.fromARGB(255, 152, 117, 117))),
-          child: Text(
-            'sign in',
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 15,
-            ),
-          ),
-          onPressed: () async {
-            dynamic result = await _auth.signInAnon();
-            if (result == null) {
-              print('error');
-            } else {
-              print('successful');
-              print(result.uid);
-            }
-          },
+        backgroundColor: Color.fromARGB(255, 128, 93, 81),
+        appBar: AppBar(
+          title: Text('BREWWW'),
+          backgroundColor: Color.fromARGB(255, 132, 90, 74),
         ),
-      ),
-    );
+        body: Container(
+            width: double.infinity,
+            height: double.infinity,
+            decoration: BoxDecoration(
+                image: DecorationImage(
+                    image: AssetImage('assets/image2.jfif'),
+                    fit: BoxFit.cover)),
+            child: Form(
+                child: Padding(
+              padding: EdgeInsets.all(20),
+              child: Column(
+                children: <Widget>[
+                  SizedBox(
+                    height: 20,
+                  ),
+                  TextFormField(
+                    decoration: const InputDecoration(
+                      labelStyle: TextStyle(color: Colors.white, fontSize: 20),
+                      hintStyle: TextStyle(color: Colors.white),
+                      iconColor: Colors.white,
+                      icon: Icon(Icons.email),
+                      labelText: 'E-mail ID',
+                    ),
+                    onChanged: (val) {
+                      setState(() {
+                        email = val;
+                      });
+                    },
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  TextFormField(
+                    decoration: InputDecoration(
+                      icon: Icon(Icons.password),
+                      labelText: 'Enter password',
+                      labelStyle: TextStyle(fontSize: 20, color: Colors.white),
+                      iconColor: Colors.white,
+                    ),
+                    onChanged: (value) => setState(() {
+                      password = value;
+                    }),
+                    obscureText: true,
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  ListTile(
+                    leading: Icon(
+                      Icons.email,
+                      color: Colors.white,
+                    ),
+                    title: Text(
+                      'New User? Sign up',
+                      style: TextStyle(fontSize: 18, color: Colors.white),
+                    ),
+                  ),
+                ],
+              ),
+            ))));
   }
 }
