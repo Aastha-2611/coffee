@@ -73,9 +73,21 @@ class _SignInState extends State<SignIn> {
                       Icons.email,
                       color: Colors.white,
                     ),
-                    title: Text(
-                      'New User? Sign up',
-                      style: TextStyle(fontSize: 18, color: Colors.white),
+                    title: Row(
+                      children: [
+                        Text(
+                          'New User? ',
+                          style: TextStyle(fontSize: 18, color: Colors.white),
+                        ),
+                        OutlinedButton(
+                            onPressed: () {},
+                            child: Text(
+                              'sign up',
+                              style:
+                                  TextStyle(fontSize: 20, color: Colors.white),
+                              textAlign: TextAlign.center,
+                            ))
+                      ],
                     ),
                   ),
                 ],
