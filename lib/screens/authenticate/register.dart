@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../services/auth.dart';
+import '../../shared/loading.dart';
 
 class Register extends StatefulWidget {
   final toggleView;
@@ -16,104 +17,125 @@ class _RegisterState extends State<Register> {
   String email = '';
   String password = '';
   String error = '';
+  bool loading = false;
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Color.fromARGB(255, 128, 93, 81),
-      appBar: AppBar(
-        title: Text('Brewww'),
-        backgroundColor: Color.fromARGB(255, 132, 90, 74),
-        actions: [
-          ElevatedButton.icon(
-              style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all<Color>(
-                Color.fromARGB(255, 132, 90, 74),
+    return loading
+        ? Loading()
+        : Scaffold(
+            backgroundColor: const Color.fromARGB(255, 128, 93, 81),
+            appBar: AppBar(
+              title: Text('Brewww'),
+              backgroundColor: Color.fromARGB(255, 132, 90, 74),
+              actions: [
+                ElevatedButton.icon(
+                    style: ButtonStyle(
+                        backgroundColor: MaterialStateProperty.all<Color>(
+                      Color.fromARGB(255, 132, 90, 74),
+                    )),
+                    onPressed: () {
+                      widget.toggleView();
+                    },
+                    icon: Icon(Icons.login),
+                    label: Text('Sign in'))
+              ],
+            ),
+            body: Container(
+              width: double.infinity,
+              height: double.infinity,
+              decoration: BoxDecoration(
+                  image: DecorationImage(
+                image: AssetImage('assets/image2.jfif'),
+                fit: BoxFit.cover,
               )),
-              onPressed: () {
-                widget.toggleView();
-              },
-              icon: Icon(Icons.login),
-              label: Text('Sign in'))
-        ],
-      ),
-      body: Container(
-        width: double.infinity,
-        height: double.infinity,
-        decoration: BoxDecoration(
-            image: DecorationImage(
-          image: AssetImage('assets/image2.jfif'),
-          fit: BoxFit.cover,
-        )),
-        child: Form(
-            key: _formKey,
-            child: Padding(
-              padding: EdgeInsets.all(
-                20,
-              ),
-              child: Column(
-                children: [
-                  SizedBox(
-                    height: 20,
-                  ),
-                  TextFormField(
-                    validator: (value) => value!.isEmpty ? 'Enter Email' : null,
-                    decoration: InputDecoration(
-                      label: Text('Email'),
-                      labelStyle: TextStyle(
-                        fontSize: 20,
-                        color: Colors.black,
-                      ),
-                      icon: Icon(Icons.email),
+              child: Form(
+                  key: _formKey,
+                  child: Padding(
+                    padding: EdgeInsets.all(
+                      10,
                     ),
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  TextFormField(
-                    validator: (value) => value!.length < 6
-                        ? 'Password must be more than 6 characters'
-                        : null,
-                    decoration: InputDecoration(
-                      label: Text('Enter password'),
-                      labelStyle: TextStyle(
-                        fontSize: 20,
-                        color: Colors.black,
-                      ),
-                      icon: Icon(Icons.password),
-                    ),
-                    obscureText: true,
-                  ),
-                  SizedBox(height: 12),
-                  OutlinedButton(
-                      onPressed: () async {
-                        if (_formKey.currentState!.validate()) {
-                          dynamic result = await _auth
-                              .registerWithEmailAndPassword(email, password);
-                          if (result == null)
-                            setState(() {
-                              error = 'Enter valid Email or password';
-                            });
-                        }
-                      },
-                      child: Text(
-                        'Sign Up',
-                        style: TextStyle(
-                          fontSize: 20,
-                          color: Colors.black,
+                    child: Column(
+                      children: [
+                        SizedBox(
+                          height: 12,
                         ),
-                      )),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  Text(
-                    error,
-                    style: TextStyle(fontSize: 18, color: Colors.red),
-                  ),
-                ],
-              ),
-            )),
-      ),
-    );
+                        TextFormField(
+                          validator: (value) =>
+                              value!.isEmpty ? 'Enter Email' : null,
+                          decoration: InputDecoration(
+                            label: Text('Email'),
+                            hintText: 'xyz@yahoo.com',
+                            hintStyle: TextStyle(color: Colors.black),
+                            labelStyle: TextStyle(
+                              fontSize: 20,
+                              color: Colors.black,
+                            ),
+                            icon: Icon(Icons.email),
+                          ),
+                          onChanged: (value) {
+                            setState(() {
+                              email = value;
+                            });
+                          },
+                        ),
+                        SizedBox(
+                          height: 12,
+                        ),
+                        TextFormField(
+                          validator: (value) => value!.length < 6
+                              ? 'Password must be more than 6 characters'
+                              : null,
+                          decoration: InputDecoration(
+                            label: Text('Enter password'),
+                            labelStyle: TextStyle(
+                              fontSize: 20,
+                              color: Colors.black,
+                            ),
+                            icon: Icon(Icons.password),
+                          ),
+                          onChanged: (value) => password = value,
+                          obscureText: true,
+                        ),
+                        SizedBox(height: 12),
+                        OutlinedButton(
+                            onPressed: () async {
+                              if (_formKey.currentState!.validate()) {
+                                setState(() {
+                                  loading = true;
+                                });
+
+                                dynamic result =
+                                    await _auth.registerWithEmailAndPassword(
+                                        email, password);
+
+                                if (result == null)
+                                  setState(() {
+                                    error = 'Enter valid Email or password';
+                                    loading = false;
+                                  });
+                                print(email);
+                                print(password);
+                              }
+                            },
+                            child: Text(
+                              'Sign Up',
+                              style: TextStyle(
+                                fontSize: 20,
+                                color: Colors.black,
+                              ),
+                            )),
+                        SizedBox(
+                          height: 12,
+                        ),
+                        Text(
+                          error,
+                          style: TextStyle(fontSize: 18, color: Colors.red),
+                        ),
+                      ],
+                    ),
+                  )),
+            ),
+          );
   }
 }

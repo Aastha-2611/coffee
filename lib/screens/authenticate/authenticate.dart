@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:coffee/screens/authenticate/register.dart';
 import 'package:coffee/screens/authenticate/signin.dart';
 import 'package:flutter/material.dart';
@@ -22,9 +20,10 @@ class _AuthenticateState extends State<Authenticate> {
 
   @override
   Widget build(BuildContext context) {
-    if (showSignIn)
+    if (showSignIn) {
       return SignIn(toggleView: toggleView);
-    else
+    } else {
       return Register(toggleView: toggleView);
+    }
   }
 }

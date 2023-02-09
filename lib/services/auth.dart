@@ -1,4 +1,5 @@
 import 'package:coffee/models/user.dart';
+import 'package:coffee/services/firebase.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class AuthService {
@@ -30,6 +31,19 @@ class AuthService {
   Future registerWithEmailAndPassword(String email, String password) async {
     try {
       UserCredential result = await _auth.createUserWithEmailAndPassword(
+          email: email, password: password);
+      User? user = result.user;
+      await DataBaseServices(uid: user!.uid)
+          .updateUserData('0', 'new user', 'medium');
+      return _userFromFirebaseUser(user);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  Future signInWithEmailAndPassword(String email, String password) async {
+    try {
+      UserCredential result = await _auth.signInWithEmailAndPassword(
           email: email, password: password);
       User? user = result.user;
       return _userFromFirebaseUser(user);
