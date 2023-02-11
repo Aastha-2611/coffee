@@ -9,10 +9,10 @@ class DataBaseServices {
   final CollectionReference brewCollection =
       FirebaseFirestore.instance.collection('brew');
 
-  Future updateUserData(String sugar, String name, String strength) async {
+  Future updateUserData(String? sugar, String? name, String? strength) async {
     return await brewCollection
         .doc(uid)
-        .set({sugar: sugar, name: name, strength: strength});
+        .set({sugar!: sugar, name!: name, strength!: strength});
   }
 
   List<Brew> _brewlistFromSnapshot(QuerySnapshot snapshot) {
@@ -32,10 +32,18 @@ class DataBaseServices {
 
   UserData _userDataFromSnapshots(DocumentSnapshot snapshot) {
     return UserData(
-      uid: uid,
-      name: snapshot.get('name'),
-      sugar: snapshot.get('sugar'),
-      strength: snapshot.get('strength'),
+      uid: snapshot.data().toString().contains('uid')
+          ? snapshot.get('uid')
+          : '0',
+      name: snapshot.data().toString().contains('name')
+          ? snapshot.get('name')
+          : 'new user',
+      sugar: snapshot.data().toString().contains('sugar')
+          ? snapshot.get('sugar')
+          : '0 sugars',
+      strength: snapshot.data().toString().contains('strength')
+          ? snapshot.get('strength')
+          : 'medium',
     );
   }
 
@@ -43,7 +51,8 @@ class DataBaseServices {
     return brewCollection.snapshots().map(_brewlistFromSnapshot);
   }
 
-  Stream<UserData> get UserModel {
+  Stream<UserData> get userModel {
+    print(uid);
     return brewCollection.doc(uid).snapshots().map(_userDataFromSnapshots);
   }
 }

@@ -9,12 +9,14 @@ class BrewTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    String name = brew?.name ?? 'new user';
+
     return Container(
       child: ListTile(
         leading: CircleAvatar(
           backgroundColor: Colors.brown,
         ),
-        title: Text(brew!.name),
+        title: Text(name),
       ),
     );
   }

@@ -8,6 +8,7 @@ class Wrapper extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<MUser?>(context);
+    print(UserData);
 
     if (user == null)
       return Authenticate();
