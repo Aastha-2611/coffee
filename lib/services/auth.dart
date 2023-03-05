@@ -1,63 +1,56 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:coffee/models/user.dart';
 import 'package:coffee/services/firebase.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-class AuthService {
+class Auth {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  MUser? _userFromFirebaseUser(dynamic user) {
-    if (user != null) {
-      return MUser(uid: user.uid);
-    } else {
-      return null;
-    }
+  UserAuth? userToModel(User? user) {
+    return user != null ? UserAuth(id: user.uid) : null;
   }
 
-  Stream<MUser?> get user {
-    return _auth.authStateChanges().map(_userFromFirebaseUser);
+  // stream for auth change
+  Stream<UserAuth?> get user {
+    return _auth.authStateChanges().map((User? user) => userToModel(user));
   }
 
-  Future signInAnon() async {
-    try {
-      UserCredential result = await _auth.signInAnonymously();
-      dynamic user = result.user;
-      return _userFromFirebaseUser(user);
-    } on Exception catch (e) {
-      print(e.toString());
-      return null;
-    }
-  }
-
-  Future registerWithEmailAndPassword(String email, String password) async {
-    try {
-      UserCredential result = await _auth.createUserWithEmailAndPassword(
-          email: email, password: password);
-      User? user = result.user;
-      await DataBaseServices(uid: user!.uid)
-          .updateUserData('0', 'new user', 'medium');
-      return _userFromFirebaseUser(user);
-    } catch (e) {
-      return null;
-    }
-  }
+  //signIn
 
   Future signInWithEmailAndPassword(String email, String password) async {
     try {
       UserCredential result = await _auth.signInWithEmailAndPassword(
           email: email, password: password);
       User? user = result.user;
-      return _userFromFirebaseUser(user);
+      return userToModel(user);
     } catch (e) {
-      return null;
+      print(e.toString());
+    }
+  }
+
+  //signUp
+
+  Future signUpWithEmailAndPassword(String email, String password) async {
+    try {
+      UserCredential result = await _auth.createUserWithEmailAndPassword(
+          email: email, password: password);
+      User? user = result.user;
+      if (user != null) {
+        await FireBaseHelper(uid: user.uid).create(UserData(
+            id: user.uid, strength: 'medium', name: 'new member', sugar: '2'));
+        return userToModel(user);
+      } else
+        return null;
+    } catch (e) {
+      print('error in signing up');
     }
   }
 
   Future signOut() async {
     try {
-      return await _auth.signOut();
+      await _auth.signOut();
     } catch (e) {
-      print(e.toString());
-      return null;
+      print('error signing out');
     }
   }
 }

@@ -1,25 +1,27 @@
-import 'package:coffee/models/brew.dart';
-import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:coffee/models/user.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:coffee/services/firebase.dart';
 import 'brewtile.dart';
 
-class BrewList extends StatefulWidget {
-  const BrewList({super.key});
+class ListData extends StatefulWidget {
+  const ListData({super.key});
 
   @override
-  State<BrewList> createState() => _BrewListState();
+  State<ListData> createState() => _ListDataState();
 }
 
-class _BrewListState extends State<BrewList> {
+class _ListDataState extends State<ListData> {
   @override
   Widget build(BuildContext context) {
-    final brews = Provider.of<List<Brew>>(context);
+    final listData = Provider.of<List<UserData>>(context);
     return ListView.builder(
-        itemCount: brews.length,
-        itemBuilder: (context, index) {
-          return BrewTile(brew: brews[index]);
-        });
+      itemCount: listData.length,
+      itemBuilder: (context, index) {
+        return SingleUser(
+          user: listData[index],
+        );
+      },
+    );
   }
 }

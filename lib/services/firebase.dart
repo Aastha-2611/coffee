@@ -1,58 +1,58 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-
-import '../models/brew.dart';
 import 'package:coffee/models/user.dart';
 
-class DataBaseServices {
-  final String? uid;
-  DataBaseServices({this.uid});
-  final CollectionReference brewCollection =
-      FirebaseFirestore.instance.collection('brew');
+class FireBaseHelper {
+  String? uid;
 
-  Future updateUserData(String? sugar, String? name, String? strength) async {
-    return await brewCollection
+  FireBaseHelper({this.uid});
+
+  final userCollection = FirebaseFirestore.instance.collection('users');
+
+  Future create(UserData userData) async {
+    final docRef = userCollection.doc(uid);
+    final user = UserData(
+      id: uid,
+      name: userData.name,
+      sugar: userData.sugar,
+      strength: userData.strength,
+    ).toJson();
+
+    try {
+      await docRef.set(user);
+    } catch (e) {
+      print('some error in creating');
+    }
+  }
+
+  //stream to read data
+  Stream<List<UserData>> get read {
+    return userCollection.snapshots().map((querySnapshot) =>
+        querySnapshot.docs.map((e) => UserData.fromSnapshot(e)).toList());
+  }
+
+  //update user
+  Future update(UserData user) async {
+    final docref = userCollection.doc(user.id);
+
+    final newUser = UserData(
+            id: user.id,
+            strength: user.strength,
+            name: user.name,
+            sugar: user.sugar)
+        .toJson();
+
+    try {
+      await docref.update(newUser);
+    } catch (e) {
+      print('error in updating');
+    }
+  }
+
+  //get logged in user
+  Stream<UserData> get loggedInUser {
+    return userCollection
         .doc(uid)
-        .set({sugar!: sugar, name!: name, strength!: strength});
-  }
-
-  List<Brew> _brewlistFromSnapshot(QuerySnapshot snapshot) {
-    return snapshot.docs.map((doc) {
-      return Brew(
-        name: doc.data().toString().contains('name')
-            ? doc.get('name')
-            : 'new member',
-        strength: doc.data().toString().contains('strength')
-            ? doc.get('strength')
-            : 'medium',
-        sugar:
-            doc.data().toString().contains('sugars') ? doc.get('sugars') : '0',
-      );
-    }).toList();
-  }
-
-  UserData _userDataFromSnapshots(DocumentSnapshot snapshot) {
-    return UserData(
-      uid: snapshot.data().toString().contains('uid')
-          ? snapshot.get('uid')
-          : '0',
-      name: snapshot.data().toString().contains('name')
-          ? snapshot.get('name')
-          : 'new user',
-      sugar: snapshot.data().toString().contains('sugar')
-          ? snapshot.get('sugar')
-          : '0 sugars',
-      strength: snapshot.data().toString().contains('strength')
-          ? snapshot.get('strength')
-          : 'medium',
-    );
-  }
-
-  Stream<List<Brew>> get brews {
-    return brewCollection.snapshots().map(_brewlistFromSnapshot);
-  }
-
-  Stream<UserData> get userModel {
-    print(uid);
-    return brewCollection.doc(uid).snapshots().map(_userDataFromSnapshots);
+        .snapshots()
+        .map((e) => UserData.fromSnapshot(e));
   }
 }

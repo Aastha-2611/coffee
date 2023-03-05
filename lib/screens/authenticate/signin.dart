@@ -13,12 +13,18 @@ class SignIn extends StatefulWidget {
 }
 
 class _SignInState extends State<SignIn> {
-  final AuthService _auth = AuthService();
+  final Auth _auth = Auth();
   final _formKey = GlobalKey<FormState>();
-
-  String email = '';
-  String password = '';
   String error = '';
+  TextEditingController _emailcontroller = TextEditingController();
+  TextEditingController _passwordcontroller = TextEditingController();
+
+  void dispose() {
+    _emailcontroller.dispose();
+    _passwordcontroller.dispose();
+    super.dispose();
+  }
+
   bool loading = false;
 
   @override
@@ -48,6 +54,7 @@ class _SignInState extends State<SignIn> {
                             height: 12,
                           ),
                           TextFormField(
+                            controller: _emailcontroller,
                             validator: (value) =>
                                 value!.isEmpty ? 'Enter Email' : null,
                             decoration: const InputDecoration(
@@ -58,16 +65,12 @@ class _SignInState extends State<SignIn> {
                               icon: Icon(Icons.email),
                               labelText: 'E-mail ID',
                             ),
-                            onChanged: (val) {
-                              setState(() {
-                                email = val;
-                              });
-                            },
                           ),
                           SizedBox(
                             height: 8,
                           ),
                           TextFormField(
+                            controller: _passwordcontroller,
                             validator: (value) => value!.length < 6
                                 ? 'Password must be more than 6 characters'
                                 : null,
@@ -78,9 +81,6 @@ class _SignInState extends State<SignIn> {
                                   TextStyle(fontSize: 20, color: Colors.black),
                               iconColor: Colors.black,
                             ),
-                            onChanged: (value) => setState(() {
-                              password = value;
-                            }),
                             obscureText: true,
                           ),
                           SizedBox(
@@ -122,15 +122,14 @@ class _SignInState extends State<SignIn> {
 
                                 dynamic result =
                                     await _auth.signInWithEmailAndPassword(
-                                        email, password);
+                                        _emailcontroller.text,
+                                        _passwordcontroller.text);
 
                                 if (result == null)
                                   setState(() {
                                     error = 'user not found';
                                     loading = false;
                                   });
-                                print(email);
-                                print(password);
                               }
                             },
                             child: Text(

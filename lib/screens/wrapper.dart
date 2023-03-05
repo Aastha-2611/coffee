@@ -5,11 +5,11 @@ import 'package:provider/provider.dart';
 import 'package:coffee/models/user.dart';
 
 class Wrapper extends StatelessWidget {
+  const Wrapper({super.key});
+
   @override
   Widget build(BuildContext context) {
-    final user = Provider.of<MUser?>(context);
-    print(UserData);
-
+    final user = Provider.of<UserAuth?>(context);
     if (user == null)
       return Authenticate();
     else

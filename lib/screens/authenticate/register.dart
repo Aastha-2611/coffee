@@ -12,10 +12,16 @@ class Register extends StatefulWidget {
 }
 
 class _RegisterState extends State<Register> {
-  final AuthService _auth = AuthService();
+  final Auth _auth = Auth();
   final _formKey = GlobalKey<FormState>();
-  String email = '';
-  String password = '';
+  TextEditingController _emailcontroller = TextEditingController();
+  TextEditingController _passwordcontroller = TextEditingController();
+  void dispose() {
+    _emailcontroller.dispose();
+    _passwordcontroller.dispose();
+    super.dispose();
+  }
+
   String error = '';
   bool loading = false;
 
@@ -61,6 +67,7 @@ class _RegisterState extends State<Register> {
                           height: 12,
                         ),
                         TextFormField(
+                          controller: _emailcontroller,
                           validator: (value) =>
                               value!.isEmpty ? 'Enter Email' : null,
                           decoration: InputDecoration(
@@ -73,16 +80,12 @@ class _RegisterState extends State<Register> {
                             ),
                             icon: Icon(Icons.email),
                           ),
-                          onChanged: (value) {
-                            setState(() {
-                              email = value;
-                            });
-                          },
                         ),
                         SizedBox(
                           height: 12,
                         ),
                         TextFormField(
+                          controller: _passwordcontroller,
                           validator: (value) => value!.length < 6
                               ? 'Password must be more than 6 characters'
                               : null,
@@ -94,7 +97,6 @@ class _RegisterState extends State<Register> {
                             ),
                             icon: Icon(Icons.password),
                           ),
-                          onChanged: (value) => password = value,
                           obscureText: true,
                         ),
                         SizedBox(height: 12),
@@ -106,16 +108,15 @@ class _RegisterState extends State<Register> {
                                 });
 
                                 dynamic result =
-                                    await _auth.registerWithEmailAndPassword(
-                                        email, password);
+                                    await _auth.signUpWithEmailAndPassword(
+                                        _emailcontroller.text,
+                                        _passwordcontroller.text);
 
                                 if (result == null)
                                   setState(() {
                                     error = 'Enter valid Email or password';
                                     loading = false;
                                   });
-                                print(email);
-                                print(password);
                               }
                             },
                             child: Text(
