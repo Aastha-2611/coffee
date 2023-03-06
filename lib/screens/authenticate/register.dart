@@ -16,10 +16,11 @@ class _RegisterState extends State<Register> {
   final _formKey = GlobalKey<FormState>();
   TextEditingController _emailcontroller = TextEditingController();
   TextEditingController _passwordcontroller = TextEditingController();
+
   void dispose() {
+    super.dispose();
     _emailcontroller.dispose();
     _passwordcontroller.dispose();
-    super.dispose();
   }
 
   String error = '';
